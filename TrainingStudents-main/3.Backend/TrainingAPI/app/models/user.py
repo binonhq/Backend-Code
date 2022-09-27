@@ -9,6 +9,7 @@ class User:
         self.password = _password
         self.created_at = int(time.time())
         self.login = False
+        self.token = ''
         self.last_updated_at = int(time.time())
 
     def to_dict(self):
@@ -18,6 +19,7 @@ class User:
             'password': self.password,
             'createdAt': self.created_at,
             'login' : self.login,
+            'token' : self.token,
             'lastUpdatedAt': self.last_updated_at
         }
 
@@ -27,6 +29,7 @@ class User:
         self.password = json_dict.get('password', '')
         self.created_at = json_dict.get('createdAt', int(time.time()))
         self.login = json_dict.get('login','')
+        self.token = json_dict.get('token','')
         self.last_updated_at = json_dict.get('lastUpdatedAt', int(time.time()))
         return self
 

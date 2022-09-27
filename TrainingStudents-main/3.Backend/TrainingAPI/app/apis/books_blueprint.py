@@ -25,17 +25,16 @@ _db = MongoDB()
 @books_bp.route('/', methods = {'GET'})
 async def get_all_book(request):
     # TODO: use cache to optimize api
-    
-    
-    # async with request.app.ctx.redis as r:
-    #     books = await get_cache(r, CacheConstants.all_books)
-    #     if books is None:
-    #         filter = {}
-    #         book_objs = _db.get_books()
-    #         books = [book.to_dict() for book in book_objs]
-    #         await set_cache(r, CacheConstants.all_books, books)
-    book_objs = _db.get_books()
-    books = [book.to_dict() for book in book_objs]        
+     
+    async with request.app.ctx.redis as r:
+        books = await get_cache(r, CacheConstants.all_books)
+        if books is None:
+            filter = {}
+            book_objs = _db.get_books()
+            books = [book.to_dict() for book in book_objs]
+            await set_cache(r, CacheConstants.all_books, books)
+    # book_objs = _db.get_books()
+    # books = [book.to_dict() for book in book_objs]        
     number_of_books = len(books)
     return json({
         'n_books': number_of_books,
@@ -64,8 +63,12 @@ async def create_book(request, username=None):
     inserted = _db.add_book(book)
     if not inserted:
         raise ApiInternalError('Fail to create book')
-    # async with request.app.ctx.redis as r:
-    #     set_cache(r, CacheConstants.all_books,inserted)
+    
+    async with request.app.ctx.redis as r:
+        book_objs = _db.get_books()
+        books = [book.to_dict() for book in book_objs]
+        await set_cache(r, CacheConstants.all_books, books)
+
     
     
     return json({'status': 'success'})
@@ -96,10 +99,16 @@ async def delete_book(request, book_id, username=None):
     if not delete:
         raise ApiInternalError('Fail to delete book')
     
+    async with request.app.ctx.redis as r:
+        book_objs = _db.get_books()
+        books = [book.to_dict() for book in book_objs]
+        await set_cache(r, CacheConstants.all_books, books)
+
     return json({
         'status': "delete success"
     })
-
+    
+    
 
     
 
