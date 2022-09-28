@@ -15,5 +15,4 @@ def generate_jwt(username, role='user'):
         }, 
         Config.SECRET_KEY
     )
-
     return token

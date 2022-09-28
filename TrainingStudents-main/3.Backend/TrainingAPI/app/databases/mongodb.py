@@ -21,18 +21,29 @@ class MongoDB:
         self._books_col = self.db[MongoCollections.books]
         self._users_col = self.db[MongoCollections.users]
 
-    def get_books(self, filter_=None, projection=None):
+    def get_all_books(self, filter_=None, projection=None):
         try:
             if not filter_:
                 filter_ = {}
             cursor = self._books_col.find(filter_, projection=projection)
             data = []
             for doc in cursor:
-                data.append(Book().from_dict(doc))
+                data.append(Book().from_dict(doc))   
             return data
         except Exception as ex:
             logger.exception(ex)
         return []
+    
+    def get_book(self, filter_=None, projection=None):
+        try:
+            if not filter_:
+                filter_ = {}
+            data = self._books_col.find_one(filter_, projection=projection)
+            return data
+        except Exception as ex:
+            logger.exception(ex)
+        return []
+
 
     def add_book(self, book: Book):
         try:
@@ -82,7 +93,6 @@ class MongoDB:
             logger.exception(ex)
         return []
     
-    # def login_user(self, username, password):
         
 
     # TODO: write functions CRUD with books

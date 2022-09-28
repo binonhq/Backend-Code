@@ -51,7 +51,10 @@ create_book_json_schema = {
 update_book_json_schema = {
     'type': 'object',
     'properties': {
-        '$set' : {}
+        'title': {'type': 'string'},
+        'authors': {'type': 'array', 'items': {'type': 'string'}},
+        'publisher': {'type': 'string'},
+        'description': {'type': 'string'}
     },
-    'required': ['$set']
+    'additionalPropertises' : False
 }

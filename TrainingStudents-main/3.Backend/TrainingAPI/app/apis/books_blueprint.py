@@ -8,9 +8,11 @@ from sanic.response import json
 from app.constants.cache_constants import CacheConstants
 from app.databases.mongodb import MongoDB
 from app.databases.redis_cached import get_cache, set_cache
+from app.decorators.auth import protected
 from app.decorators.json_validator import validate_with_jsonschema
-from app.hooks.error import ApiInternalError
+from app.hooks.error import ApiBadRequest, ApiInternalError
 from app.models.book import update_book_json_schema, create_book_json_schema, Book
+from app.models.user import User
 from app.hooks.error import ApiInternalError
 
 
@@ -30,7 +32,7 @@ async def get_all_book(request):
         books = await get_cache(r, CacheConstants.all_books)
         if books is None:
             filter = {}
-            book_objs = _db.get_books()
+            book_objs = _db.get_all_books()
             books = [book.to_dict() for book in book_objs]
             await set_cache(r, CacheConstants.all_books, books)
     # book_objs = _db.get_books()
@@ -44,16 +46,17 @@ async def get_all_book(request):
 @books_bp.route('/<book_id>', methods = {'GET'})
 async def get_book(request, book_id):
     filter = {"_id" : book_id}
-    book_objs = _db.get_books(filter)
-    books = [book.to_dict() for book in book_objs]
+    book = _db.get_book(filter)
+    if not book: 
+        raise ApiBadRequest("Not found book")
     return json({
-        'Book': books
+        'Book': book
     })
 
 
 
 @books_bp.route('/', methods={'POST'})
-# @protected  # TODO: Authenticate
+@protected  # TODO: Authenticate
 @validate_with_jsonschema(create_book_json_schema)  # To validate request body
 async def create_book(request, username=None):
     body = request.json
@@ -65,7 +68,7 @@ async def create_book(request, username=None):
         raise ApiInternalError('Fail to create book')
     
     async with request.app.ctx.redis as r:
-        book_objs = _db.get_books()
+        book_objs = _db.get_all_books()
         books = [book.to_dict() for book in book_objs]
         await set_cache(r, CacheConstants.all_books, books)
 
@@ -74,13 +77,19 @@ async def create_book(request, username=None):
     return json({'status': 'success'})
 
 @books_bp.route('/<book_id>', methods={'PUT'})
-# @protected  # TODO: Authenticate
+@protected  # TODO: Authenticate
 @validate_with_jsonschema(update_book_json_schema)  # To validate request body
+
 async def update_book(request, book_id, username=None):
     filter_find = {"_id": book_id}
+    book = _db.get_book(filter_find)
+    if not book : 
+        raise ApiBadRequest('Dont exist book')
+    if book['owner'] != username:
+        raise ApiBadRequest('Dont have permission to update this book')
+    
     filter_update = request.json
-
-    update = _db.update_book(filter_find,filter_update)
+    update = _db.update_book(filter_find,{"$set":filter_update})
     
     if not update:
         raise ApiInternalError('Fail to update book')
@@ -90,17 +99,19 @@ async def update_book(request, book_id, username=None):
     })
     
 @books_bp.route('/<book_id>', methods={'DELETE'})
-# @protected  # TODO: Authenticate
+@protected  # TODO: Authenticate
 async def delete_book(request, book_id, username=None):
-    filter_find = {"_id" : book_id}
-
+    filter_find = {"_id": book_id}
+    book = _db.get_book(filter_find)
+    if not book : 
+        raise ApiBadRequest('Dont exist book')
+    if book['owner'] != username:
+        raise ApiBadRequest('Dont have permission to delete this book')
     delete = _db.delete_book(filter_find)
-    
     if not delete:
         raise ApiInternalError('Fail to delete book')
-    
     async with request.app.ctx.redis as r:
-        book_objs = _db.get_books()
+        book_objs = _db.get_all_books()
         books = [book.to_dict() for book in book_objs]
         await set_cache(r, CacheConstants.all_books, books)
 
