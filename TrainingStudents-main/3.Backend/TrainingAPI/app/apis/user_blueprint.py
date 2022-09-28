@@ -6,7 +6,6 @@ import hashlib
 from sanic import Blueprint
 from sanic.response import json
 from app.decorators.auth import protected
-
 from app.utils.jwt_utils import generate_jwt
 from app.constants.cache_constants import CacheConstants
 from app.databases.mongodb import MongoDB
@@ -25,15 +24,8 @@ _db = MongoDB()
     
 @users_bp.route('/', methods = {'GET'})
 async def get_all_user(request):
-    async with request.app.ctx.redis as r:
-        users = await get_cache(r, CacheConstants.all_users)
-        if users is None:
-            filter = {}
-            user_objs = _db.get_users()
-            users = [user.to_dict() for user in user_objs]
-            await set_cache(r, CacheConstants.all_users, users)
-    # user_objs = _db.get_users()
-    # users = [user.to_dict() for user in user_objs]        
+    user_objs = _db.get_users()
+    users = [user.to_dict() for user in user_objs]        
     number_of_users = len(users)
     return json({
         'n_users': number_of_users,
@@ -72,9 +64,8 @@ async def login_user(request):
         raise ApiBadRequest("Wrong information")
     
     token_jwt = generate_jwt(user_name).decode("utf-8")
-    _db._users_col.find_one_and_update({"username" : user_name},{"$set" : {"token" : str(token_jwt)}})
+    _db._users_col.find_one_and_update({"username" : user_name},{"$set" : {"jwt_token" : str(token_jwt)}})
     account = _db._users_col.find_one({"username" : user_name})
-     
         
     return json({
         'status': "Login success",
@@ -86,6 +77,13 @@ async def login_user(request):
 async def now_user(request,username):
     return json({
         'now user' : username
+    })
+    
+@users_bp.route('/logout', methods={'GET'})
+@protected
+async def now_user(request,username):
+    return json({
+        'status' : "logout success"
     })
 
     

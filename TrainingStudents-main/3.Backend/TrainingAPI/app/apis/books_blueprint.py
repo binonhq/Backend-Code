@@ -10,7 +10,7 @@ from app.databases.mongodb import MongoDB
 from app.databases.redis_cached import get_cache, set_cache
 from app.decorators.auth import protected
 from app.decorators.json_validator import validate_with_jsonschema
-from app.hooks.error import ApiBadRequest, ApiInternalError
+from app.hooks.error import ApiBadRequest, ApiInternalError, ApiNotFound, ApiUnauthorized
 from app.models.book import update_book_json_schema, create_book_json_schema, Book
 from app.models.user import User
 from app.hooks.error import ApiInternalError
@@ -71,8 +71,6 @@ async def create_book(request, username=None):
         book_objs = _db.get_all_books()
         books = [book.to_dict() for book in book_objs]
         await set_cache(r, CacheConstants.all_books, books)
-
-    
     
     return json({'status': 'success'})
 
@@ -84,9 +82,9 @@ async def update_book(request, book_id, username=None):
     filter_find = {"_id": book_id}
     book = _db.get_book(filter_find)
     if not book : 
-        raise ApiBadRequest('Dont exist book')
+        raise ApiNotFound('Dont exist book')
     if book['owner'] != username:
-        raise ApiBadRequest('Dont have permission to update this book')
+        raise ApiUnauthorized("Dont have permission to update this book")
     
     filter_update = request.json
     update = _db.update_book(filter_find,{"$set":filter_update})
@@ -104,9 +102,9 @@ async def delete_book(request, book_id, username=None):
     filter_find = {"_id": book_id}
     book = _db.get_book(filter_find)
     if not book : 
-        raise ApiBadRequest('Dont exist book')
+        raise ApiNotFound('Dont exist book')
     if book['owner'] != username:
-        raise ApiBadRequest('Dont have permission to delete this book')
+        raise ApiUnauthorized('Dont have permission to delete this book')
     delete = _db.delete_book(filter_find)
     if not delete:
         raise ApiInternalError('Fail to delete book')

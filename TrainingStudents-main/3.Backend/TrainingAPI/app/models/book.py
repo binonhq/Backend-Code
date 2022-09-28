@@ -56,5 +56,5 @@ update_book_json_schema = {
         'publisher': {'type': 'string'},
         'description': {'type': 'string'}
     },
-    'additionalPropertises' : False
+    "additionalProperties":False
 }
