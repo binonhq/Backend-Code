@@ -92,6 +92,11 @@ async def update_book(request, book_id, username=None):
     if not update:
         raise ApiInternalError('Fail to update book')
     
+    async with request.app.ctx.redis as r:
+        book_objs = _db.get_all_books()
+        books = [book.to_dict() for book in book_objs]
+        await set_cache(r, CacheConstants.all_books, books)
+    
     return json({
         'status': "update success"
     })

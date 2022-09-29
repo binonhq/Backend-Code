@@ -57,9 +57,10 @@ class BooksTests(unittest.TestCase):
                                                                          headers=header
                                                                          )
         self.assertEqual(response_create_book.status, 200)
+        _db._books_col.find_one_and_delete({}, sort=[('createdAt', pymongo.DESCENDING)])
 
     def test_get_book_by_ID(self):
-        latest_book =_db._books_col.find_one({}, sort=[('createdAt', pymongo.ASCENDING)])
+        latest_book =_db._books_col.find_one({}, sort=[('createdAt', pymongo.DESCENDING)])
         book_id = latest_book.get("_id")
         # Get with wrong ID - Check
         request_noId, response_noId = app.test_client.get('/books/noID')
@@ -99,11 +100,24 @@ class BooksTests(unittest.TestCase):
         header = {
             'Authorization': jwt_code
         }
+        key_create_book = json.dumps({
+            "title": "Book Test",
+            "authors": [],
+            "publisher": ""
+        })
+        request_create_book, response_create_book = app.test_client.post('/books',
+                                                                         data=key_create_book,
+                                                                         headers=header
+                                                                         )
+        latest_book =_db._books_col.find_one(sort = [('createdAt', pymongo.DESCENDING)])
+        book_id = latest_book.get("_id")
+
         request_update_book, response_update_book = app.test_client.put(f'/books/{book_id}',
                                                                         data=key_update_book,
                                                                         headers=header
                                                                         )
         self.assertEqual(response_update_book.status, 200)
+        _db._books_col.find_one_and_delete({}, sort=[('createdAt', pymongo.DESCENDING)])
 
         # Update with wrong ID - Check
         request_noId, response_noId = app.test_client.put('/books/noID',
@@ -112,15 +126,17 @@ class BooksTests(unittest.TestCase):
         self.assertEqual(response_noId.status, 404)
 
         # Update with non-owner - Check
-        request_non_owner_update_book, response_non_owner_update_book = app.test_client.put('/books/31bbe961-491a-4aa2-b9b2-d01c107bdc22',
+        request_non_owner_update_book, response_non_owner_update_book = app.test_client.put('/books/0e4b2e59-a0f3-4245-8b88-fbc654e52823',
                                                                                             data=key_update_book,
                                                                                             headers=header
                                                                                             )
         self.assertEqual(response_non_owner_update_book.status, 403)
         self.assertEqual(json.loads(response_non_owner_update_book.text).get(
             'message'), "Forbidden: Dont have permission to update this book")
+
      
     def test_delete_book(self):
+
         latest_book =_db._books_col.find_one(sort = [('createdAt', pymongo.DESCENDING)])
         book_id = latest_book.get("_id")
         # Delete without login - Check
@@ -145,13 +161,22 @@ class BooksTests(unittest.TestCase):
         header = {
             'Authorization': jwt_code
         }
+        key_create_book = json.dumps({
+            "title": "Book Test",
+            "authors": [],
+            "publisher": ""
+        })
+        request_create_book, response_create_book = app.test_client.post('/books',
+                                                                         data=key_create_book,
+                                                                         headers=header
+                                                                         )
         request_delete_book, response_delete_book = app.test_client.delete(f'/books/{book_id}',
                                                                         headers=header
                                                                         )
         self.assertEqual(response_delete_book.status, 200)
 
         # Delete with non-owner - Check
-        request_non_owner_delete_book, response_non_owner_delete_book = app.test_client.delete('/books/31bbe961-491a-4aa2-b9b2-d01c107bdc22',
+        request_non_owner_delete_book, response_non_owner_delete_book = app.test_client.delete('/books/0e4b2e59-a0f3-4245-8b88-fbc654e52823',
                                                                                             headers=header
                                                                                             )
         self.assertEqual(response_non_owner_delete_book.status, 403)
