@@ -42,7 +42,7 @@ class MongoDB:
             return data
         except Exception as ex:
             logger.exception(ex)
-        return []
+        return None
 
 
     def add_book(self, book: Book):
@@ -61,6 +61,7 @@ class MongoDB:
             return update_doc
         except Exception as ex:
             logger.exception(ex)
+        return None
             
     
     def delete_book(self, filter_: None):
@@ -71,6 +72,7 @@ class MongoDB:
             return delete_doc
         except Exception as ex:
             logger.exception(ex)
+        return None
 
     def register_user(self, user: User):
         try:

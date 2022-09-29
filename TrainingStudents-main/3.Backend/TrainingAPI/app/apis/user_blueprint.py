@@ -64,12 +64,10 @@ async def login_user(request):
         raise ApiBadRequest("Wrong information")
     
     token_jwt = generate_jwt(user_name).decode("utf-8")
-    _db._users_col.find_one_and_update({"username" : user_name},{"$set" : {"jwt_token" : str(token_jwt)}})
-    account = _db._users_col.find_one({"username" : user_name})
         
     return json({
         'status': "Login success",
-        'user' : account
+        'jwt_token' : token_jwt
     })
     
 @users_bp.route('/now', methods={'GET'})

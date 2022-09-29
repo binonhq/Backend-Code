@@ -48,7 +48,7 @@ class BooksTests(unittest.TestCase):
         })
         request_login, response_login = app.test_client.post('/users/login',
                                                              data=key_login)
-        jwt_code = json.loads(response_login.text).get('user').get('jwt_token')
+        jwt_code = json.loads(response_login.text).get('jwt_token')
         header = {
             'Authorization': jwt_code
         }
@@ -95,7 +95,7 @@ class BooksTests(unittest.TestCase):
         })
         request_login, response_login = app.test_client.post(
             '/users/login', data=key_login)
-        jwt_code = json.loads(response_login.text).get('user').get('jwt_token')
+        jwt_code = json.loads(response_login.text).get('jwt_token')
         header = {
             'Authorization': jwt_code
         }
@@ -116,9 +116,9 @@ class BooksTests(unittest.TestCase):
                                                                                             data=key_update_book,
                                                                                             headers=header
                                                                                             )
-        self.assertEqual(response_non_owner_update_book.status, 401)
+        self.assertEqual(response_non_owner_update_book.status, 403)
         self.assertEqual(json.loads(response_non_owner_update_book.text).get(
-            'message'), "Unauthorized: Dont have permission to update this book")
+            'message'), "Forbidden: Dont have permission to update this book")
      
     def test_delete_book(self):
         latest_book =_db._books_col.find_one(sort = [('createdAt', pymongo.DESCENDING)])
@@ -134,14 +134,6 @@ class BooksTests(unittest.TestCase):
         # self.assertEqual(json.loads(response_noLogin.text).get(
         #     'message'), "Unauthorized: No one was login")
         
-        # Delete with non-owner - Check
-        request_non_owner_delete_book, response_non_owner_delete_book = app.test_client.delete('/books/31bbe961-491a-4aa2-b9b2-d01c107bdc22',
-                                                                                            headers=header
-                                                                                            )
-        self.assertEqual(response_non_owner_delete_book.status, 401)
-        # self.assertEqual(json.loads(response_non_owner_delete_book.text).get(
-        #     'message'), "Unauthorized: Dont have permission to delete this book")    
-        
         # Delete with owner - Check
         key_login = json.dumps({
             "username": "admin",
@@ -149,7 +141,7 @@ class BooksTests(unittest.TestCase):
         })
         request_login, response_login = app.test_client.post(
             '/users/login', data=key_login)
-        jwt_code = json.loads(response_login.text).get('user').get('jwt_token')
+        jwt_code = json.loads(response_login.text).get('jwt_token')
         header = {
             'Authorization': jwt_code
         }
@@ -158,6 +150,15 @@ class BooksTests(unittest.TestCase):
                                                                         )
         self.assertEqual(response_delete_book.status, 200)
 
+        # Delete with non-owner - Check
+        request_non_owner_delete_book, response_non_owner_delete_book = app.test_client.delete('/books/31bbe961-491a-4aa2-b9b2-d01c107bdc22',
+                                                                                            headers=header
+                                                                                            )
+        self.assertEqual(response_non_owner_delete_book.status, 403)
+        # self.assertEqual(json.loads(response_non_owner_delete_book.text).get(
+        #     'message'), "Forbidden: Dont have permission to delete this book")    
+        
+        
         # Delete with wrong ID - Check
         request_noId, response_noId = app.test_client.delete('/books/noID',
                                                           headers=header)

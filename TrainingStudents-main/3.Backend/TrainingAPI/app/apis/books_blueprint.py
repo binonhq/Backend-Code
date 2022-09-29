@@ -10,7 +10,7 @@ from app.databases.mongodb import MongoDB
 from app.databases.redis_cached import get_cache, set_cache
 from app.decorators.auth import protected
 from app.decorators.json_validator import validate_with_jsonschema
-from app.hooks.error import ApiBadRequest, ApiInternalError, ApiNotFound, ApiUnauthorized
+from app.hooks.error import ApiBadRequest, ApiForbidden, ApiInternalError, ApiNotFound, ApiUnauthorized
 from app.models.book import update_book_json_schema, create_book_json_schema, Book
 from app.models.user import User
 from app.hooks.error import ApiInternalError
@@ -84,7 +84,7 @@ async def update_book(request, book_id, username=None):
     if not book : 
         raise ApiNotFound('Dont exist book')
     if book['owner'] != username:
-        raise ApiUnauthorized("Dont have permission to update this book")
+        raise ApiForbidden("Dont have permission to update this book")
     
     filter_update = request.json
     update = _db.update_book(filter_find,{"$set":filter_update})
@@ -104,7 +104,7 @@ async def delete_book(request, book_id, username=None):
     if not book : 
         raise ApiNotFound('Dont exist book')
     if book['owner'] != username:
-        raise ApiUnauthorized('Dont have permission to delete this book')
+        raise ApiForbidden('Dont have permission to delete this book')
     delete = _db.delete_book(filter_find)
     if not delete:
         raise ApiInternalError('Fail to delete book')
