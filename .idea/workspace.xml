@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4085ad56-b71f-4858-98ca-55facd7024f5" name="Changes" comment="" />
+    <list default="true" id="4085ad56-b71f-4858-98ca-55facd7024f5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/Backend-Code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Backend-Code.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingStudents-main/3.Backend/TrainingAPI/app/apis/books_blueprint.py" beforeDir="false" afterPath="$PROJECT_DIR$/TrainingStudents-main/3.Backend/TrainingAPI/app/apis/books_blueprint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingStudents-main/3.Backend/TrainingAPI/app/apis/user_blueprint.py" beforeDir="false" afterPath="$PROJECT_DIR$/TrainingStudents-main/3.Backend/TrainingAPI/app/apis/user_blueprint.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,6 +33,7 @@
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
@@ -35,9 +41,36 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "/home/binonhq/Documents/Backend-Code",
-    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
+    "run.code.analysis.last.selected.profile": "aDefault",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PythonContentEntriesConfigurable"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="books_blueprint" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Backend-Code" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TrainingStudents-main/3.Backend/TrainingAPI/app/apis" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TrainingStudents-main/3.Backend/TrainingAPI/app/apis/books_blueprint.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.books_blueprint" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -47,6 +80,8 @@
       <option name="presentableId" value="Default" />
       <updated>1664264872209</updated>
       <workItem from="1664264874077" duration="671000" />
+      <workItem from="1664426771150" duration="207000" />
+      <workItem from="1664426985385" duration="711000" />
     </task>
     <servers />
   </component>
@@ -63,5 +98,8 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Backend_Code$books_blueprint.coverage" NAME="books_blueprint Coverage Results" MODIFIED="1664427067365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingStudents-main/3.Backend/TrainingAPI/app/apis" />
   </component>
 </project>
