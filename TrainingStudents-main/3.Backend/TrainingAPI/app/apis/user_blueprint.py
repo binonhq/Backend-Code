@@ -61,7 +61,7 @@ async def login_user(request):
     if not account:
         raise ApiBadRequest("Wrong information")
 
-    token_jwt = generate_jwt(user_name).decode("utf-8")
+    token_jwt = generate_jwt(user_name)
 
     return json({
         'status': "Login success",
